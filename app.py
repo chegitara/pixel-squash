@@ -3,14 +3,10 @@ import sqlite3
 
 app = Flask(__name__)
 
-# 🔐 Session Key (nur für Test)
+# 🔐 Session Key
 app.secret_key = "testkey123"
 
 DB = "highscores.db"
-
-# 🔐 Test-Login (später erweiterbar)
-USER = "test"
-PASS = "1234"
 
 
 # ---------------------------
@@ -36,12 +32,9 @@ init_db()
 
 
 # ---------------------------
-# LOGIN PAGE
+# LOGIN / USERNAME
 # ---------------------------
 @app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = @app.route('/login', methods=['GET', 'POST'])
 def login():
 
     if request.method == 'POST':
@@ -61,27 +54,30 @@ def logout():
 
 
 # ---------------------------
-# GAME PAGE (geschützt)
+# GAME PAGE
 # ---------------------------
 @app.route('/')
 def index():
+
     if 'user' not in session:
         return redirect(url_for('login'))
+
     return render_template('index.html')
 
 
 # ---------------------------
-# SCORE SPEICHERN
+# SAVE SCORE
 # ---------------------------
 @app.route('/save_score', methods=['POST'])
 def save_score():
+
     if 'user' not in session:
         return jsonify({'status': 'not logged in'})
 
     data = request.json
     score = data.get('score', 0)
 
-    name = session['user']  # 🔥 Username aus Login
+    name = session['user']
 
     conn = sqlite3.connect(DB)
     cur = conn.cursor()
@@ -98,10 +94,11 @@ def save_score():
 
 
 # ---------------------------
-# HIGHSCORES LADEN
+# HIGHSCORES
 # ---------------------------
 @app.route('/highscores')
 def highscores():
+
     conn = sqlite3.connect(DB)
     cur = conn.cursor()
 
