@@ -128,8 +128,7 @@ function moveEnemy() {
 
     let dist = Math.sqrt(dx * dx + dy * dy);
 
-    // 🔥 Scaling: wird schneller mit Score
-    let speed = Math.min(enemy.baseSpeed + (score * 0.05), 1.5);
+    let speed = 0,3;
 
     enemy.x += (dx / dist) * speed;
     enemy.y += (dy / dist) * speed;
@@ -155,6 +154,20 @@ function gameOver() {
 function retryGame() {
     document.getElementById("gameOverScreen").style.display = "none";
     startGame();
+}
+
+function resetGame() {
+    score = 0;
+    scoreEl.innerText = score;
+
+    player.x = 180;
+    player.y = 180;
+
+    enemy.x = randomPos();
+    enemy.y = randomPos();
+
+    food.x = randomPos();
+    food.y = randomPos();
 }
 
 // ---------------------------
