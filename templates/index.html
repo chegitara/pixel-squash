@@ -6,10 +6,12 @@
     <title>Pixel Squash</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
 
 <h1>PIXEL SQUASH</h1>
 
+<!-- START SCREEN -->
 <div id="startScreen" style="
     position:fixed;
     top:0;
@@ -25,6 +27,7 @@
     z-index:9999;
 ">
     <h1>🎮 Pixel Squash</h1>
+
     <button onclick="startGame()" style="
         padding:15px 30px;
         font-size:20px;
@@ -32,26 +35,29 @@
     ">
         ▶ Play
     </button>
+</div>
 
-    <button onclick="resetGame()" style="
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    padding: 10px;
+<!-- LOGOUT -->
+<a href="/logout">
+    <button style="position:absolute; top:10px; right:10px; padding:10px;">
+        Logout
+    </button>
+</a>
+
+<!-- GAME -->
+<canvas id="game" width="400" height="400"></canvas>
+
+<!-- RESET -->
+<button onclick="resetGame()" style="
+    position:absolute;
+    top:10px;
+    left:10px;
+    padding:10px;
 ">
     🔄 Reset
 </button>
 
-</div>
-
-<a href="/logout">
-        <button style="position:absolute; top:10px; right:10px; padding:10px;">
-            Logout
-        </button>
-    </a>
-
-<canvas id="game" width="400" height="400"></canvas>
-
+<!-- SCORE -->
 <div class="panel">
     <p>Score: <span id="score">0</span></p>
 
@@ -61,6 +67,8 @@
     <ul id="highscores"></ul>
 </div>
 
+<!-- GAME SCRIPT -->
 <script src="/static/game.js"></script>
+
 </body>
 </html>
