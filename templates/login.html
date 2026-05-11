@@ -1,21 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <title>Pixel Squash</title>
+
+    <style>
+        body{
+            background:black;
+            color:white;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            font-family:Arial;
+            flex-direction:column;
+        }
+
+        input{
+            padding:15px;
+            font-size:20px;
+            margin-top:20px;
+        }
+
+        button{
+            padding:15px 30px;
+            font-size:20px;
+            margin-top:20px;
+            cursor:pointer;
+        }
+    </style>
 </head>
 
-<body style="background:black; color:white; text-align:center; font-family:Arial;">
+<body>
 
-    <h1>🎮 Pixel Squash Login</h1>
+<h1>🎮 PIXEL SQUASH</h1>
 
-    <form method="POST">
-        <input name="username" placeholder="Username"><br><br>
-        <input name="password" type="password" placeholder="Password"><br><br>
-        <button type="submit">Login</button>
-    </form>
+<form method="POST">
 
-    <p>Test Login:</p>
-    <p><b>test / 1234</b></p>
+    <input
+        type="text"
+        name="username"
+        placeholder="Dein Name"
+        required
+    >
+
+    <br>
+
+    <button type="submit">
+        Spielen
+    </button>
+
+</form>
 
 </body>
 </html>

@@ -41,14 +41,12 @@ init_db()
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = @app.route('/login', methods=['GET', 'POST'])
+def login():
 
-        if username == USER and password == PASS:
-            session['user'] = username
-            return redirect(url_for('index'))
-
-        return "Falscher Login ❌"
+    if request.method == 'POST':
+        session['user'] = request.form['username']
+        return redirect(url_for('index'))
 
     return render_template('login.html')
 

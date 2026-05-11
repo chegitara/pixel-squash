@@ -139,8 +139,15 @@ function moveEnemy() {
 // ---------------------------
 // GAME OVER
 // ---------------------------
-function gameOver() {
+async function gameOver() {
+
+    // Nur speichern wenn >= 2
+    if (score >= 2) {
+        await saveScore();
+    }
+
     alert("Game Over! Score: " + score);
+
     resetGame();
 }
 
@@ -157,18 +164,21 @@ function update() {
     draw(food);
 
     // Enemy collision
-    if (collision(player, enemy)) {
-        gameOver();
-    }
+  if (collision(player, food)) {
 
-    // Food collision
-    if (collision(player, food)) {
-        score++;
-        scoreEl.innerText = score;
+    score++;
+    scoreEl.innerText = score;
 
-        food.x = randomPos();
-        food.y = randomPos();
-    }
+    // Neues Food
+    food.x = randomPos();
+    food.y = randomPos();
+
+    // Enemy wird größer
+    enemy.size = Math.min(enemy.size + 2, 120);
+
+    // Optional: minimal schneller
+    enemy.baseSpeed = Math.min(enemy.baseSpeed + 0.02, 3);
+}
 
     requestAnimationFrame(update);
 }
