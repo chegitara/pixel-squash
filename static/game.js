@@ -5,6 +5,8 @@ const scoreEl = document.getElementById('score');
 
 let score = 0;
 
+let gameRunning = false;
+
 // ---------------------------
 // PLAYER
 // ---------------------------
@@ -41,26 +43,37 @@ let food = {
 // START GAME
 // ---------------------------
 function startGame() {
+
     document.getElementById("startScreen").style.display = "none";
     document.getElementById("game").style.display = "block";
 
     resetGame();
+
+    gameRunning = true;
+
     update();
 }
-
 // ---------------------------
 // RESET GAME
 // ---------------------------
 function resetGame() {
+
     score = 0;
     scoreEl.innerText = score;
 
+    // Player reset
     player.x = 180;
     player.y = 180;
 
+    // Enemy reset
     enemy.x = randomPos();
     enemy.y = randomPos();
 
+    // 🔥 WICHTIG:
+    enemy.size = 20;
+    enemy.baseSpeed = 0.3;
+
+    // Food reset
     food.x = randomPos();
     food.y = randomPos();
 }
@@ -141,20 +154,33 @@ function moveEnemy() {
 // ---------------------------
 async function gameOver() {
 
-    // Nur speichern wenn >= 2
+    // Score nur speichern wenn >= 2
     if (score >= 2) {
         await saveScore();
     }
 
-    alert("Game Over! Score: " + score);
+    // Game stoppen
+    gameRunning = false;
 
-    resetGame();
+    // Game Over Nachricht
+    let retry = confirm(
+        "💀 GAME OVER 💀\n\nScore: " + score + "\n\nNochmal spielen?"
+    );
+
+    // Spieler möchte neu starten
+    if (retry) {
+        resetGame();
+        gameRunning = true;
+        update();
+    }
 }
 
 // ---------------------------
 // MAIN LOOP
 // ---------------------------
 function update() {
+
+    if (!gameRunning) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     moveEnemy();
