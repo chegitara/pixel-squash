@@ -25,7 +25,7 @@ let enemy = {
     y: 50,
     size: 20,
     color: 'red',
-    speed: 1.9
+    speed: 0.4
 };
 
 let food = {
