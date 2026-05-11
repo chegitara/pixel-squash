@@ -21,23 +21,19 @@ let player = {
 // ---------------------------
 // ENEMY (chase)
 // ---------------------------
-let enemy = {
-    x: 50,
-    y: 50,
-    size: 20,
-    color: 'red',
-    baseSpeed: 0.3
-};
+let enemies = [];
 
-// ---------------------------
-// FOOD (score)
-// ---------------------------
-let food = {
-    x: randomPos(),
-    y: randomPos(),
-    size: 20,
-    color: 'blue'
-};
+function createEnemy() {
+
+    enemies.push({
+        x: randomPos(),
+        y: randomPos(),
+        size: 20,
+        color: 'red',
+        baseSpeed: 0.3
+    });
+
+}
 
 // ---------------------------
 // START GAME
@@ -56,28 +52,24 @@ function startGame() {
 // ---------------------------
 // RESET GAME
 // ---------------------------
-function resetGame() {
+    function resetGame() {
 
     score = 0;
     scoreEl.innerText = score;
 
-    // Player reset
     player.x = 180;
     player.y = 180;
-
-    // Enemy reset
-    enemy.x = randomPos();
-    enemy.y = randomPos();
-
-    // 🔥 WICHTIG:
-    enemy.size = 20;
-    enemy.baseSpeed = 0.3;
 
     // Food reset
     food.x = randomPos();
     food.y = randomPos();
-}
 
+    // Alle Gegner löschen
+    enemies = [];
+
+    // 1 Start Gegner
+    createEnemy();
+}
 // ---------------------------
 // RANDOM POS
 // ---------------------------
@@ -137,16 +129,24 @@ function collision(a, b) {
 // ---------------------------
 // ENEMY AI (slow chase + scaling)
 // ---------------------------
-function moveEnemy() {
-    let dx = player.x - enemy.x;
-    let dy = player.y - enemy.y;
+function moveEnemies() {
 
-    let dist = Math.sqrt(dx * dx + dy * dy);
+    enemies.forEach(enemy => {
 
-    let speed = Math.min(enemy.baseSpeed + (score * 0.03), 2);
+        let dx = player.x - enemy.x;
+        let dy = player.y - enemy.y;
 
-    enemy.x += (dx / dist) * speed;
-    enemy.y += (dy / dist) * speed;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 0) {
+
+            enemy.x += (dx / dist) * enemy.baseSpeed;
+            enemy.y += (dy / dist) * enemy.baseSpeed;
+
+        }
+
+    });
+
 }
 
 // ---------------------------
@@ -173,6 +173,14 @@ async function gameOver() {
         gameRunning = true;
         update();
     }
+enemies.forEach(enemy => {
+
+    if (collision(player, enemy)) {
+        gameOver();
+    }
+
+});
+
 }
 
 // ---------------------------
@@ -183,10 +191,12 @@ function update() {
     if (!gameRunning) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    moveEnemy();
+    moveEnemies();
 
     draw(player);
-    draw(enemy);
+    enemies.forEach(enemy => {
+    drawRect(enemy);
+});
     draw(food);
 
     // Enemy collision
@@ -194,6 +204,15 @@ function update() {
 
     score++;
     scoreEl.innerText = score;
+
+    let targetEnemies = Math.min(
+    1 + Math.floor(score / 5),
+    10
+);
+
+while (enemies.length < targetEnemies) {
+    createEnemy();
+}
 
     // Neues Food
     food.x = randomPos();
