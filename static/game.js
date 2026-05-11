@@ -21,11 +21,11 @@ let player = {
 // ENEMY (langsam + KI)
 // ---------------------------
 let enemy = {
-    x: 50,
-    y: 50,
+    x: randomPos(),
+    y: randomPos(),
     size: 20,
     color: 'red',
-    speed: 0.4
+    baseSpeed: 0.5
 };
 
 let food = {
@@ -107,8 +107,11 @@ function moveEnemy() {
 
     let dist = Math.sqrt(dx * dx + dy * dy);
 
-    enemy.x += (dx / dist) * enemy.speed;
-    enemy.y += (dy / dist) * enemy.speed;
+    // 🔥 Scaling: wird schneller mit Score
+    let speed = Math.min(enemy.baseSpeed + (score * 0.05), 1.5);
+
+    enemy.x += (dx / dist) * speed;
+    enemy.y += (dy / dist) * speed;
 }
 
 // ---------------------------
