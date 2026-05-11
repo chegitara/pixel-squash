@@ -4,7 +4,6 @@ const ctx = canvas.getContext('2d');
 const scoreEl = document.getElementById('score');
 
 let score = 0;
-
 let gameRunning = false;
 
 // ---------------------------
@@ -19,12 +18,21 @@ let player = {
 };
 
 // ---------------------------
-// ENEMY (chase)
+// FOOD
+// ---------------------------
+let food = {
+    x: 100,
+    y: 100,
+    size: 20,
+    color: 'blue'
+};
+
+// ---------------------------
+// ENEMIES
 // ---------------------------
 let enemies = [];
 
 function createEnemy() {
-
     enemies.push({
         x: randomPos(),
         y: randomPos(),
@@ -32,27 +40,25 @@ function createEnemy() {
         color: 'red',
         baseSpeed: 0.3
     });
-
 }
 
 // ---------------------------
-// START GAME
+// START
 // ---------------------------
 function startGame() {
-
     document.getElementById("startScreen").style.display = "none";
     document.getElementById("game").style.display = "block";
 
     resetGame();
 
     gameRunning = true;
-
     update();
 }
+
 // ---------------------------
-// RESET GAME
+// RESET
 // ---------------------------
-    function resetGame() {
+function resetGame() {
 
     score = 0;
     scoreEl.innerText = score;
@@ -60,25 +66,22 @@ function startGame() {
     player.x = 180;
     player.y = 180;
 
-    // Food reset
     food.x = randomPos();
     food.y = randomPos();
 
-    // Alle Gegner löschen
     enemies = [];
-
-    // 1 Start Gegner
     createEnemy();
 }
+
 // ---------------------------
-// RANDOM POS
+// RANDOM
 // ---------------------------
 function randomPos() {
     return Math.floor(Math.random() * 19) * 20;
 }
 
 // ---------------------------
-// INPUT (Keyboard)
+// INPUT
 // ---------------------------
 window.addEventListener('keydown', e => {
     if (e.key === 'ArrowUp') player.y -= player.speed;
@@ -88,22 +91,10 @@ window.addEventListener('keydown', e => {
 });
 
 function move(direction) {
-
-    if (direction === 'up') {
-        player.y -= player.speed;
-    }
-
-    if (direction === 'down') {
-        player.y += player.speed;
-    }
-
-    if (direction === 'left') {
-        player.x -= player.speed;
-    }
-
-    if (direction === 'right') {
-        player.x += player.speed;
-    }
+    if (direction === 'up') player.y -= player.speed;
+    if (direction === 'down') player.y += player.speed;
+    if (direction === 'left') player.x -= player.speed;
+    if (direction === 'right') player.x += player.speed;
 }
 
 // ---------------------------
@@ -127,7 +118,7 @@ function collision(a, b) {
 }
 
 // ---------------------------
-// ENEMY AI (slow chase + scaling)
+// ENEMY MOVEMENT
 // ---------------------------
 function moveEnemies() {
 
@@ -139,14 +130,25 @@ function moveEnemies() {
         let dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist > 0) {
-
             enemy.x += (dx / dist) * enemy.baseSpeed;
             enemy.y += (dy / dist) * enemy.baseSpeed;
-
         }
 
     });
+}
 
+// ---------------------------
+// CHECK ENEMY COLLISION
+// ---------------------------
+function checkEnemyCollision() {
+
+    for (let enemy of enemies) {
+        if (collision(player, enemy)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // ---------------------------
@@ -154,76 +156,71 @@ function moveEnemies() {
 // ---------------------------
 async function gameOver() {
 
-    // Score nur speichern wenn >= 2
+    if (!gameRunning) return;
+    gameRunning = false;
+
     if (score >= 2) {
         await saveScore();
     }
 
-    // Game stoppen
-    gameRunning = false;
+    setTimeout(() => {
 
-    // Game Over Nachricht
-    let retry = confirm(
-        "💀 GAME OVER 💀\n\nScore: " + score + "\n\nNochmal spielen?"
-    );
+        let retry = confirm("💀 GAME OVER 💀\nScore: " + score + "\nNochmal spielen?");
 
-    // Spieler möchte neu starten
-    if (retry) {
-        resetGame();
-        gameRunning = true;
-        update();
-    }
-enemies.forEach(enemy => {
+        if (retry) {
+            resetGame();
+            gameRunning = true;
+            update();
+        }
 
-    if (collision(player, enemy)) {
-        gameOver();
-    }
-
-});
-
+    }, 50);
 }
 
 // ---------------------------
-// MAIN LOOP
+// UPDATE LOOP
 // ---------------------------
 function update() {
 
     if (!gameRunning) return;
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     moveEnemies();
 
+    // DRAW PLAYER
     draw(player);
-    enemies.forEach(enemy => {
-    drawRect(enemy);
-});
+
+    // DRAW ENEMIES
+    enemies.forEach(e => draw(e));
+
+    // DRAW FOOD
     draw(food);
 
-    // Enemy collision
-  if (collision(player, food)) {
+    // ENEMY HIT
+    if (checkEnemyCollision()) {
+        gameOver();
+        return;
+    }
 
-    score++;
-    scoreEl.innerText = score;
+    // FOOD COLLISION
+    if (collision(player, food)) {
 
-    let targetEnemies = Math.min(
-    1 + Math.floor(score / 5),
-    10
-);
+        score++;
+        scoreEl.innerText = score;
 
-while (enemies.length < targetEnemies) {
-    createEnemy();
-}
+        food.x = randomPos();
+        food.y = randomPos();
 
-    // Neues Food
-    food.x = randomPos();
-    food.y = randomPos();
+        // Enemy scaling system
+        let targetEnemies = Math.min(
+            1 + Math.floor(score / 5),
+            10
+        );
 
-    // Enemy wird größer
-    enemy.size = Math.min(enemy.size + 2, 120);
-
-    // Optional: minimal schneller
-    enemy.baseSpeed = Math.min(enemy.baseSpeed + 0.02, 3);
-}
+        while (enemies.length < targetEnemies) {
+            createEnemy();
+        }
+    }
 
     requestAnimationFrame(update);
 }
@@ -232,6 +229,7 @@ while (enemies.length < targetEnemies) {
 // SAVE SCORE
 // ---------------------------
 async function saveScore() {
+
     await fetch('/save_score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -245,6 +243,7 @@ async function saveScore() {
 // LOAD SCORES
 // ---------------------------
 async function loadScores() {
+
     const res = await fetch('/highscores');
     const data = await res.json();
 
