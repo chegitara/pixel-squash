@@ -9,7 +9,37 @@
 
 <h1>PIXEL SQUASH</h1>
 
-<canvas id="game" width="400" height="400"></canvas>
+<div id="startScreen" style="
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:black;
+    color:white;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+">
+    <h1>🎮 Pixel Squash</h1>
+    <button onclick="startGame()" style="
+        padding:15px 30px;
+        font-size:20px;
+        cursor:pointer;
+    ">
+        ▶ Play
+    </button>
+</div>
+
+<a href="/logout">
+        <button style="position:absolute; top:10px; right:10px; padding:10px;">
+            Logout
+        </button>
+    </a>
+
+<canvas id="game" style="display:none;"></canvas>
 
 <div class="panel">
     <p>Score: <span id="score">0</span></p>
