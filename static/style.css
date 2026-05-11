@@ -10,9 +10,9 @@ body {
 }
 
 canvas {
+    width: 90vmin;
+    height: 90vmin;
     border: 4px solid white;
-    image-rendering: pixelated;
-    background: black;
     display: block;
     margin: 0 auto;
 }

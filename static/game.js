@@ -3,6 +3,27 @@ const ctx = canvas.getContext('2d');
 
 const scoreEl = document.getElementById('score');
 
+let touchStartX = 0;
+let touchStartY = 0;
+
+document.addEventListener("touchstart", e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+});
+
+document.addEventListener("touchend", e => {
+    let dx = e.changedTouches[0].clientX - touchStartX;
+    let dy = e.changedTouches[0].clientY - touchStartY;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0) player.x += player.speed;
+        else player.x -= player.speed;
+    } else {
+        if (dy > 0) player.y += player.speed;
+        else player.y -= player.speed;
+    }
+});
+
 let score = 0;
 let gameLoop = null;
 
