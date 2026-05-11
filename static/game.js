@@ -205,22 +205,30 @@ function update() {
     // FOOD COLLISION
     if (collision(player, food)) {
 
-        score++;
-        scoreEl.innerText = score;
+    score++;
+    scoreEl.innerText = score;
 
-        food.x = randomPos();
-        food.y = randomPos();
+    food.x = randomPos();
+    food.y = randomPos();
 
-        // Enemy scaling system
-        let targetEnemies = Math.min(
-            1 + Math.floor(score / 5),
-            10
-        );
+    // 🔥 Enemy Scaling bei jedem Food
+    enemies.forEach(enemy => {
 
-        while (enemies.length < targetEnemies) {
-            createEnemy();
-        }
+        enemy.size = Math.min(enemy.size + 1, 80);  // Größe + Limit
+        enemy.baseSpeed = Math.min(enemy.baseSpeed + 0.02, 3); // optional schneller
+
+    });
+
+    // Enemy Spawn System
+    let targetEnemies = Math.min(
+        1 + Math.floor(score / 5),
+        10
+    );
+
+    while (enemies.length < targetEnemies) {
+        createEnemy();
     }
+}
 
     requestAnimationFrame(update);
 }
