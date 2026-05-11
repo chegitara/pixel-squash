@@ -25,7 +25,14 @@ let enemy = {
     y: 50,
     size: 20,
     color: 'red',
-    speed: 1.5
+    speed: 1.2
+};
+
+let food = {
+    x: randomPos(),
+    y: randomPos(),
+    size: 20,
+    color: 'blue'
 };
 
 // ---------------------------
@@ -136,10 +143,23 @@ function update() {
 
     drawRect(player);
     drawRect(enemy);
+    drawRect(food); // 🔵 neuer Gegner (Score-Food)
 
+    // 🔴 Enemy (Game Over)
     if (collision(player, enemy)) {
         gameOver();
     }
+
+    // 🔵 Food (Score + Respawn)
+    if (collision(player, food)) {
+        score++;
+        scoreEl.innerText = score;
+
+        food.x = randomPos();
+        food.y = randomPos();
+    }
+
+    requestAnimationFrame(update);
 }
 
 // ---------------------------
