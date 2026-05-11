@@ -47,6 +47,16 @@
 <!-- GAME -->
 <canvas id="game" width="400" height="400"></canvas>
 
+<div id="joystick">
+    <button ontouchstart="move('up')">⬆️</button>
+
+    <div>
+        <button ontouchstart="move('left')">⬅️</button>
+        <button ontouchstart="move('down')">⬇️</button>
+        <button ontouchstart="move('right')">➡️</button>
+    </div>
+</div>
+
 <!-- RESET -->
 <button onclick="resetGame()" style="
     position:absolute;

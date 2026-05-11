@@ -82,6 +82,25 @@ window.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') player.x += player.speed;
 });
 
+function move(direction) {
+
+    if (direction === 'up') {
+        player.y -= player.speed;
+    }
+
+    if (direction === 'down') {
+        player.y += player.speed;
+    }
+
+    if (direction === 'left') {
+        player.x -= player.speed;
+    }
+
+    if (direction === 'right') {
+        player.x += player.speed;
+    }
+}
+
 // ---------------------------
 // DRAW
 // ---------------------------

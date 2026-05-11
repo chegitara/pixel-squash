@@ -30,3 +30,22 @@ button {
 input {
     padding: 10px;
 }
+
+#joystick {
+    margin-top: 20px;
+}
+
+#joystick button {
+    width: 70px;
+    height: 70px;
+    margin: 5px;
+    font-size: 30px;
+    border: none;
+    border-radius: 15px;
+    background: #333;
+    color: white;
+}
+
+#joystick button:active {
+    background: #666;
+}
