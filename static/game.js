@@ -75,21 +75,19 @@ function update() {
 }
 
 async function saveScore() {
-    const name = document.getElementById('playerName').value || 'Player';
-
     await fetch('/save_score', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            name,
             score
         })
     });
 
     loadScores();
 }
+    
 
 async function loadScores() {
     const res = await fetch('/highscores');

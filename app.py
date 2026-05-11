@@ -1,44 +1,95 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import sqlite3
 
 app = Flask(__name__)
 
-DB = 'highscores.db'
+# 🔐 Session Key (nur für Test)
+app.secret_key = "testkey123"
+
+DB = "highscores.db"
+
+# 🔐 Test-Login (später erweiterbar)
+USER = "test"
+PASS = "1234"
 
 
+# ---------------------------
+# DB INIT
+# ---------------------------
 def init_db():
     conn = sqlite3.connect(DB)
     cur = conn.cursor()
 
-    cur.execute('''
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS highscores (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
             score INTEGER
         )
-    ''')
+    """)
 
     conn.commit()
     conn.close()
 
 
+init_db()
+
+
+# ---------------------------
+# LOGIN PAGE
+# ---------------------------
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        if username == USER and password == PASS:
+            session['user'] = username
+            return redirect(url_for('index'))
+
+        return "Falscher Login ❌"
+
+    return render_template('login.html')
+
+
+# ---------------------------
+# LOGOUT
+# ---------------------------
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('login'))
+
+
+# ---------------------------
+# GAME PAGE (geschützt)
+# ---------------------------
 @app.route('/')
 def index():
+    if 'user' not in session:
+        return redirect(url_for('login'))
     return render_template('index.html')
 
 
+# ---------------------------
+# SCORE SPEICHERN
+# ---------------------------
 @app.route('/save_score', methods=['POST'])
 def save_score():
-    data = request.json
+    if 'user' not in session:
+        return jsonify({'status': 'not logged in'})
 
-    name = data.get('name', 'Player')
+    data = request.json
     score = data.get('score', 0)
+
+    name = session['user']  # 🔥 Username aus Login
 
     conn = sqlite3.connect(DB)
     cur = conn.cursor()
 
     cur.execute(
-        'INSERT INTO highscores (name, score) VALUES (?, ?)',
+        "INSERT INTO highscores (name, score) VALUES (?, ?)",
         (name, score)
     )
 
@@ -48,14 +99,20 @@ def save_score():
     return jsonify({'status': 'ok'})
 
 
+# ---------------------------
+# HIGHSCORES LADEN
+# ---------------------------
 @app.route('/highscores')
 def highscores():
     conn = sqlite3.connect(DB)
     cur = conn.cursor()
 
-    cur.execute(
-        'SELECT name, score FROM highscores ORDER BY score DESC LIMIT 10'
-    )
+    cur.execute("""
+        SELECT name, score
+        FROM highscores
+        ORDER BY score DESC
+        LIMIT 10
+    """)
 
     scores = cur.fetchall()
 
@@ -64,8 +121,8 @@ def highscores():
     return jsonify(scores)
 
 
+# ---------------------------
+# START
+# ---------------------------
 if __name__ == '__main__':
-    init_db()
-    app.run(host='0.0.0.0', port=5000)
-else:
-    init_db()
+    app.run(debug=True)
